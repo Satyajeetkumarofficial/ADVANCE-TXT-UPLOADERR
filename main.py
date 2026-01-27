@@ -569,13 +569,13 @@ else:
             url = "https://" + V
 
             if "visionias" in url:
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Referer': 'http://www.visionias.in/'
-    }
-    r = requests.get(url, headers=headers)
-    text = r.text
-    url = re.search(r'(https://.*?playlist.m3u8.*?)"', text).group(1)
+                headers = {
+                    'User-Agent': 'Mozilla/5.0',
+                    'Referer': 'http://www.visionias.in/'
+                }
+                r = requests.get(url, headers=headers)
+                text = r.text
+                url = re.search(r'(https://.*?playlist.m3u8.*?)"', text).group(1)
                         
             elif 'media-cdn.classplusapp.com/drm/' in url:
                 url = f"https://dragoapi.vercel.app/video/{url}"
