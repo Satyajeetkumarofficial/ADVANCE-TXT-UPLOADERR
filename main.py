@@ -557,38 +557,83 @@ if thumb.startswith("http://") or thumb.startswith("https://"):
     thumb = "thumb.jpg"
 else:
     thumb = "no"
-    failed_count =0
-    if len(links) == 1:
-        count = 1
-    else:
-        count = int(raw_text)
 
-    try:
-        for i in range(count - 1, len(links)):
-            V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","") # .replace("mpd","m3u8")
-            url = "https://" + V
+failed_count = 0
 
-            if "visionias" in url:
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'Referer': 'http://www.visionias.in/'
-    }
-    r = requests.get(url, headers=headers)
-    text = r.text
-    url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
-                        
-            elif 'media-cdn.classplusapp.com/drm/' in url:
-                url = f"https://dragoapi.vercel.app/video/{url}"
+if len(links) == 1:
+    count = 1
+else:
+    count = int(raw_text)
 
-            elif 'videos.classplusapp' in url:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-             url = requests.get(f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}', headers={'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9'}).json()['url']                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-            elif "tencdn.classplusapp" in url or "media-cdn-alisg.classplusapp.com" in url or "videos.classplusapp" in url or "media-cdn.classplusapp" in url:
-             headers = {'Host': 'api.classplusapp.com', 'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9', 'user-agent': 'Mobile-Android', 'app-version': '1.4.37.1', 'api-version': '18', 'device-id': '5d0d17ac8b3c9f51', 'device-details': '2848b866799971ca_2848b8667a33216c_SDK-30', 'accept-encoding': 'gzip'}
-             params = (('url', f'{url}'),)
-             response = requests.get('https://api.classplusapp.com/cams/uploader/video/jw-signed-url', headers=headers, params=params)
-             url = response.json()['url']
+try:
+    for i in range(count - 1, len(links)):
 
+        V = links[i][1].replace(
+            "file/d/", "uc?export=download&id="
+        ).replace(
+            "www.youtube-nocookie.com/embed", "youtu.be"
+        ).replace(
+            "?modestbranding=1", ""
+        ).replace(
+            "/view?usp=sharing", ""
+        )
+
+        url = "https://" + V
+
+
+        # ===== visionias FIX (no async) =====
+        if "visionias" in url:
+            headers = {
+                'User-Agent': 'Mozilla/5.0',
+                'Referer': 'http://www.visionias.in/'
+            }
+            r = requests.get(url, headers=headers)
+            text = r.text
+            url = re.search(r'(https://.*?playlist.m3u8.*?)"', text).group(1)
+
+
+        # ===== drm link =====
+        elif 'media-cdn.classplusapp.com/drm/' in url:
+            url = f"https://dragoapi.vercel.app/video/{url}"
+
+
+        # ===== classplus short =====
+        elif 'videos.classplusapp' in url:
+            url = requests.get(
+                f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}',
+                headers={
+                    'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9'
+                }
+            ).json()['url']
+
+
+        # ===== classplus long =====
+        elif (
+            "tencdn.classplusapp" in url
+            or "media-cdn-alisg.classplusapp.com" in url
+            or "media-cdn.classplusapp" in url
+        ):
+            headers = {
+                'Host': 'api.classplusapp.com',
+                'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9',
+                'user-agent': 'Mobile-Android',
+                'app-version': '1.4.37.1',
+                'api-version': '18',
+                'device-id': '5d0d17ac8b3c9f51',
+                'device-details': 'SDK-30',
+                'accept-encoding': 'gzip'
+            }
+
+            params = (('url', url),)
+
+            response = requests.get(
+                'https://api.classplusapp.com/cams/uploader/video/jw-signed-url',
+                headers=headers,
+                params=params
+            )
+
+            url = response.json()['url']
+            
             elif "https://appx-transcoded-videos.livelearn.in/videos/rozgar-data/" in url:
                 url = url.replace("https://appx-transcoded-videos.livelearn.in/videos/rozgar-data/", "")
                 name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "@").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
