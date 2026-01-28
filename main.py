@@ -670,8 +670,10 @@ else:
 
                 if "drive" in url:
                     try:
-                        ka = await helper.download(url, name)
-                        copy = await bot.send_document(
+                        ka = await 
+                        helper.download(url, name)
+                        copy = await
+                        bot.send_document(
                             chat_id=m.chat.id,
                             document=ka,
                             caption=cc1
